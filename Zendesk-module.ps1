@@ -18,7 +18,7 @@
     .NOTES
     This function is not yet complete. At the moment it only auhenticates using token
     .COMPONENT
-    PSZendesk
+    PS-Zendesk
 #>
 
 Function New-ZendeskConnection
@@ -52,8 +52,7 @@ Function New-ZendeskConnection
     $ZendeskURI = "https://$ZendeskSite/api/v2/"
     $ZendeskHeaders = @{
       Authorization = 'Basic ' + [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes("$($ZendeskUser)/token:$($ZendeskToken)"))
-    }
-          
+    }        
   }
   End
   {
@@ -90,7 +89,7 @@ Function New-ZendeskConnection
     .NOTES
     This function is not yet complete. At the moment I cant get it to return multiple tickets when using -TicketID 75,76,77
     .COMPONENT
-    PSZendesk
+    PS-Zendesk
 #>
 function Get-ZendeskTicket
 {
@@ -106,7 +105,7 @@ function Get-ZendeskTicket
     $ZendeskConnection,
 
     # a ticketnumber
-    [string[]]$TicketID
+    [int[]]$TicketID
   )
   Begin
   {
@@ -118,15 +117,16 @@ function Get-ZendeskTicket
     { 
       $URI = $ZendeskConnection.ZendeskURI + 'tickets.json'
       return Invoke-RestMethod -Uri "$URI" -Method 'GET' -Headers $Headers
-    
     }
-    else {
-      Foreach ($Number in $TicketID) 
+    else 
+    {
+      foreach ($Number in $TicketID)
       {
-        $URI = $ZendeskConnection.ZendeskURI + 'tickets/' + $Number + '.json'
-        return Invoke-RestMethod -Uri "$URI" -Method 'GET' -Headers $Headers
-        #$Result = $Result + $Ticket
+         $ids = $ids + "$Number," 
       }
+      
+      $URI = $ZendeskConnection.ZendeskURI + 'tickets/show_many.json?ids=' + $ids
+      return Invoke-RestMethod -Uri "$URI" -Method 'GET' -Headers $Headers
     }
   }
   end
