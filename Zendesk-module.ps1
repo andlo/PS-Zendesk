@@ -20,7 +20,6 @@
     .COMPONENT
     PS-Zendesk
 #>
-
 Function New-ZendeskConnection
 {
   [CmdletBinding(DefaultParameterSetName = 'Parameter Set 1', 
@@ -32,15 +31,15 @@ Function New-ZendeskConnection
   Param
   (
     # The zendesk site - eg. CronusSupport.zendesk.com 
-    [string]
+    [Parameter(Mandatory = $true)][string]
     $ZendeskSite,
 
     # Zendesk User Name - normaly the loginname to your ZendeskSite
-    [String]
+    [Parameter(Mandatory = $true)][String]
     $ZendeskUser,
 
     # Zendesk Access token
-    [String]
+    [Parameter(Mandatory = $true)][String]
     $ZendeskToken
   )
   
@@ -49,9 +48,9 @@ Function New-ZendeskConnection
   }
   Process
   {
-    $ZendeskURI = "https://$ZendeskSite/api/v2/"
+    $ZendeskURI = ('https://{0}/api/v2/' -f $ZendeskSite)
     $ZendeskHeaders = @{
-      Authorization = 'Basic ' + [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes("$($ZendeskUser)/token:$($ZendeskToken)"))
+      Authorization = 'Basic ' + [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes(('{0}/token:{1}' -f ($ZendeskUser), ($ZendeskToken))))
     }        
   }
   End
@@ -102,10 +101,10 @@ function Get-ZendeskTicket
     [Parameter(Mandatory = $true,
         ValueFromPipelineByPropertyName = $true,
     Position = 0)]
-    $ZendeskConnection,
+    [Object]$ZendeskConnection,
 
     # a ticketnumber
-    [int[]]$TicketID
+    [Parameter(Mandatory = $true)][int[]]$TicketID
   )
   Begin
   {
@@ -116,23 +115,23 @@ function Get-ZendeskTicket
     if (!$TicketID) 
     { 
       $URI = $ZendeskConnection.ZendeskURI + 'tickets.json'
-      return Invoke-RestMethod -Uri "$URI" -Method 'GET' -Headers $Headers
+      return Invoke-RestMethod -Uri ('{0}' -f $URI) -Method 'GET' -Headers $Headers
     }
     else 
     {
       if ($TicketID.Count -eq 1)
       {
         $URI = $ZendeskConnection.ZendeskURI + 'tickets/' + $TicketID + '.json'
-        return Invoke-RestMethod -Uri "$URI" -Method 'GET' -Headers $Headers  
+        return Invoke-RestMethod -Uri ('{0}' -f $URI) -Method 'GET' -Headers $Headers  
       }    
       else
       { 
         foreach ($Number in $TicketID)
         {
-          $ids = $ids + "$Number," 
+          $ids = $ids + ('{0},' -f $Number)
         }
         $URI = $ZendeskConnection.ZendeskURI + 'tickets/show_many.json?ids=' + $ids
-        return Invoke-RestMethod -Uri "$URI" -Method 'GET' -Headers $Headers
+        return Invoke-RestMethod -Uri ('{0}' -f $URI) -Method 'GET' -Headers $Headers
       }
     }
   }
@@ -209,10 +208,10 @@ Function Search-Zendesk
     [Parameter(Mandatory = $true,
         ValueFromPipelineByPropertyName = $true,
     Position = 0)]
-    $ZendeskConnection,
+    [Object]$ZendeskConnection,
 
     # Search String
-    [string]$Query
+    [Parameter(Mandatory = $true)][string]$Query
   )
   Begin
   {
@@ -222,7 +221,7 @@ Function Search-Zendesk
   {
     #GET /api/v2/search.json?query={search_string}
     $URI = $ZendeskConnection.ZendeskURI + 'search.json?query=' + $Query
-    return Invoke-RestMethod -Uri "$URI" -Method 'GET' -Headers $Headers
+    return Invoke-RestMethod -Uri ('{0}' -f $URI) -Method 'GET' -Headers $Headers
   }
   end
   {
