@@ -1,27 +1,27 @@
 ﻿#requires -Version 3.0
 <#
     .Synopsis
-    Short description
+    Creates a connectionstring to Zendesk
+    
     .DESCRIPTION
-    Long description
+    Nothing yet...
+
     .EXAMPLE
-    Example of how to use this cmdlet
-    .EXAMPLE
-    Another example of how to use this cmdlet
+    
+    $Zendesk = New-ZendeskConnection -ZendeskSite captosupport.zendesk.com -ZendeskUser <ZendeskUser> -ZendeskToken <TOKEN> -Verbose
+    
     .INPUTS
     Inputs to this cmdlet (if any)
+    
     .OUTPUTS
-    Output from this cmdlet (if any)
+    A ZendeskConnection Object    
     .NOTES
-    General notes
+    This function is not yet complete. At the moment it only auhenticates using token
     .COMPONENT
-    The component this cmdlet belongs to
-    .ROLE
-    The role this cmdlet belongs to
-    .FUNCTIONALITY
-    The functionality that best describes this cmdlet
+    PSZendesk
 #>
-function New-ZendeskConnection
+
+Function New-ZendeskConnection
 {
   [CmdletBinding(DefaultParameterSetName = 'Parameter Set 1', 
       SupportsShouldProcess = $true, 
@@ -49,11 +49,10 @@ function New-ZendeskConnection
   }
   Process
   {
-      
     $ZendeskURI = "https://$ZendeskSite/api/v2/"
     $ZendeskHeaders = @{
       Authorization = 'Basic ' + [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes("$($ZendeskUser)/token:$($ZendeskToken)"))
-  }
+    }
           
   }
   End
@@ -64,47 +63,73 @@ function New-ZendeskConnection
     }
   }
 }
-
 <#
-.Synopsis
-   Short description
-.DESCRIPTION
-   Long description
-.EXAMPLE
-   Example of how to use this cmdlet
-.EXAMPLE
-   Another example of how to use this cmdlet
+    .Synopsis
+    Retives one or mre tickets from Zendesk and return them as Powershell Objects
+    
+    .DESCRIPTION
+    Nothing yet...
+
+    .EXAMPLE
+    This retives all tickets from Zendesk
+
+    $Zendesk = New-ZendeskConnection -ZendeskSite captosupport.zendesk.com -ZendeskUser <ZendeskUser> -ZendeskToken <TOKEN> -Verbose
+    Get-ZendeskTicket -ZendeskConnection $Zendesk 
+
+    .EXAMPLE
+    This retives all ticket #75 from Zendesk
+
+    $Zendesk = New-ZendeskConnection -ZendeskSite captosupport.zendesk.com -ZendeskUser <ZendeskUser> -ZendeskToken <TOKEN> -Verbose
+    Get-ZendeskTicket -ZendeskConnection $Zendesk -TicketID 75
+    
+    .INPUTS
+    Inputs to this cmdlet (if any)
+    .OUTPUTS
+    One or more Tickets as posershell objects
+    
+    .NOTES
+    This function is not yet complete. At the moment I cant get it to return multiple tickets when using -TicketID 75,76,77
+    .COMPONENT
+    PSZendesk
 #>
 function Get-ZendeskTicket
 {
   [CmdletBinding()]
   [Alias()]
-  #[OutputType([int])]
+  [OutputType('ZendestTicket[]')]
   Param
   (
-    # Param1 help description
-    [Parameter(Mandatory=$true,
-        ValueFromPipelineByPropertyName=$true,
-    Position=0)]
+    # A ZendeskConnection object
+    [Parameter(Mandatory = $true,
+        ValueFromPipelineByPropertyName = $true,
+    Position = 0)]
     $ZendeskConnection,
 
-    # Param2 help description
-    [int]
-    $TicketID
+    # a ticketnumber
+    [string[]]$TicketID
   )
-
   Begin
   {
-  }
-  Process
-  {
-  }
-  End
-  {
-    $URI = ' ' + $ZendeskConnection.ZendeskURI + 'tickets.json' 
     $Headers = $ZendeskConnection.ZendeskHeaders
-    Write-output "Return Invoke-RestMethod -Uri "$URI" -Method GET' -Headers 'yyyy'" 
-    $Result = Invoke-RestMethod -Uri "$URI" -Method 'GET' -Headers "$Headers"
-    $Result
+  }
+  process
+  {
+    if (!$TicketID) 
+    { 
+      $URI = $ZendeskConnection.ZendeskURI + 'tickets.json'
+      return Invoke-RestMethod -Uri "$URI" -Method 'GET' -Headers $Headers
+    
+    }
+    else {
+      Foreach ($Number in $TicketID) 
+      {
+        $URI = $ZendeskConnection.ZendeskURI + 'tickets/' + $Number + '.json'
+        return Invoke-RestMethod -Uri "$URI" -Method 'GET' -Headers $Headers
+        #$Result = $Result + $Ticket
+      }
+    }
+  }
+  end
+  {
   }
 }
