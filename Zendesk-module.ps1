@@ -80,6 +80,13 @@ Function New-ZendeskConnection
     $Zendesk = New-ZendeskConnection -ZendeskSite captosupport.zendesk.com -ZendeskUser <ZendeskUser> -ZendeskToken <TOKEN> -Verbose
     Get-ZendeskTicket -ZendeskConnection $Zendesk -TicketID 75
     
+    .EXAMPLE
+    This return three tickets
+    
+    $Zendesk = New-ZendeskConnection -ZendeskSite captosupport.zendesk.com -ZendeskUser <ZendeskUser> -ZendeskToken <TOKEN> -Verbose
+    Get-ZendeskTicket -ZendeskConnection $Zendesk -TicketID 75,76,77
+    
+
     .INPUTS
     Inputs to this cmdlet (if any)
     .OUTPUTS
