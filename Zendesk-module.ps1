@@ -120,13 +120,20 @@ function Get-ZendeskTicket
     }
     else 
     {
-      foreach ($Number in $TicketID)
+      if ($TicketID.Count -eq 1)
       {
-         $ids = $ids + "$Number," 
+        $URI = $ZendeskConnection.ZendeskURI + 'tickets/' + $TicketID + '.json'
+        return Invoke-RestMethod -Uri "$URI" -Method 'GET' -Headers $Headers  
+      }    
+      else
+      { 
+        foreach ($Number in $TicketID)
+        {
+          $ids = $ids + "$Number," 
+        }
+        $URI = $ZendeskConnection.ZendeskURI + 'tickets/show_many.json?ids=' + $ids
+        return Invoke-RestMethod -Uri "$URI" -Method 'GET' -Headers $Headers
       }
-      
-      $URI = $ZendeskConnection.ZendeskURI + 'tickets/show_many.json?ids=' + $ids
-      return Invoke-RestMethod -Uri "$URI" -Method 'GET' -Headers $Headers
     }
   }
   end
