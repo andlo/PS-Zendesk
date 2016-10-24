@@ -1,5 +1,41 @@
 ﻿function Get-ZendeskTicket
 {
+  <#
+      .Synopsis
+      Retives one or mre tickets from Zendesk and return them as Powershell Objects
+    
+      .DESCRIPTION
+      Nothing yet...
+
+      .EXAMPLE
+      This retives all tickets from Zendesk
+
+      $Zendesk = New-ZendeskConnection -ZendeskSite captosupport.zendesk.com -ZendeskUser <ZendeskUser> -ZendeskToken <TOKEN> -Verbose
+      Get-ZendeskTicket -ZendeskConnection $Zendesk 
+
+      .EXAMPLE
+      This retives all ticket #75 from Zendesk
+
+      $Zendesk = New-ZendeskConnection -ZendeskSite captosupport.zendesk.com -ZendeskUser <ZendeskUser> -ZendeskToken <TOKEN> -Verbose
+      Get-ZendeskTicket -ZendeskConnection $Zendesk -TicketID 75
+    
+      .EXAMPLE
+      This return three tickets
+    
+      $Zendesk = New-ZendeskConnection -ZendeskSite captosupport.zendesk.com -ZendeskUser <ZendeskUser> -ZendeskToken <TOKEN> -Verbose
+      Get-ZendeskTicket -ZendeskConnection $Zendesk -TicketID 75,76,77
+    
+
+      .INPUTS
+      Inputs to this cmdlet (if any)
+      .OUTPUTS
+      One or more Tickets as posershell objects
+    
+      .NOTES
+      This function is not yet complete. At the moment I cant get it to return multiple tickets when using -TicketID 75,76,77
+      .COMPONENT
+      PS-Zendesk
+  #>
   [CmdletBinding()]
   [OutputType('ZendestTicket[]')]
   Param

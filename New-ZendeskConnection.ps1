@@ -1,5 +1,28 @@
-﻿Function New-ZendeskConnection
+﻿#requires -Version 3.0
+Function New-ZendeskConnection
 {
+  <#
+      .Snopsis
+      Creates a connectionstring to Zendesk
+    
+      .DESCRIPTION
+      Nothing yet...
+
+      .EXAMPLE
+    
+      $Zendesk = New-ZendeskConnection -ZendeskSite captosupport.zendesk.com -ZendeskUser <ZendeskUser> -ZendeskToken <TOKEN> -Verbose
+    
+      .INPUTS
+      Inputs to this cmdlet (if any)
+    
+      .OUTPUTS
+      A ZendeskConnection Object    
+      .NOTES
+      This function is not yet complete. At the moment it only auhenticates using token
+      .COMPONENT
+      PS-Zendesk
+  #>
+  
   [CmdletBinding(DefaultParameterSetName = 'Parameter Set 1', 
       SupportsShouldProcess = $true, 
       PositionalBinding = $false,
