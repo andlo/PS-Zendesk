@@ -1,6 +1,6 @@
 ﻿#requires -Version 3.0
 <#
-    .Synopsis
+    .Syxvxcvxcvnopsis
     Creates a connectionstring to Zendesk
     
     .DESCRIPTION
